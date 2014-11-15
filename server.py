@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 import requests
 import json
+from keys import PARSE_APP_ID, PARSE_REST_KEY
 from utils import valid_coords
 app = Flask(__name__)
 
@@ -39,8 +40,8 @@ def build_tree():
     req = requests.get('https://api.parse.com/1/classes/Place', data={
         'where': query
     }, headers={
-        "X-Parse-Application-Id": "pjDqEx0JZwcC6mWcycXAQ6lIWaldcGtynfLIkR0B",
-        "X-Parse-REST-API-Key": "m62wRFWC1JQ2fbFoNYmAPt6nmtOrRmXeUCJY49P1"
+        "X-Parse-Application-Id": PARSE_APP_ID,
+        "X-Parse-REST-API-Key": PARSE_REST_KEY
     })
 
     res = req.json()
