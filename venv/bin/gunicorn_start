@@ -1,0 +1,27 @@
+NAME="where2go"                                  # Name of the application
+APPDIR=/webapps/where2go/server            # Django project directory
+SOCKFILE=/webapps/where2go/server/run/gunicorn.sock  # we will communicte using this unix socket
+USER=where2go                                        # the user to run as
+GROUP=webapps                                     # the group to run as
+NUM_WORKERS=4                                     # how many worker processes should Gunicorn spawn
+FLASK_APP=server             # which settings file should Django use
+NUM_THREADS=4
+
+echo "Starting $NAME as `whoami`"
+ 
+# Activate the virtual environment
+cd $APPDIR
+source ../bin/activate
+ 
+# Create the run directory if it doesn't exist
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+ 
+# Start your Django Unicorn
+# Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
+exec ../bin/gunicorn ${FLASK_APP}:app \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --user=$USER --group=$GROUP \
+  --log-level=debug \
+  --bind=unix:$SOCKFILE
