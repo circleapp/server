@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from flask import Flask
 from flask import request
+from flask import Response
 import requests
 import json
 from keys import PARSE_APP_ID, PARSE_REST_KEY
@@ -52,7 +53,7 @@ def build_tree():
         }), 400
 
     #TODO: Procesar algoritmo de AI para recomendaciones
-    return json.dumps(res)
+    return Response(json.dumps(res), mimetype="application/json")
 
 
 if __name__ == "__main__":
