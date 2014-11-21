@@ -97,3 +97,30 @@ def search_venues():
             print venue.get('name')
 
     return "Populated :D"
+
+
+def add_attribute(attr):
+    u = 'https://api.parse.com/1/classes/Attribute'
+    attrs_request = requests.get(u, data={
+        'limit': 500,
+    }, headers={
+        "X-Parse-Application-Id": keys.PARSE_APP_ID,
+        "X-Parse-REST-API-Key": keys.PARSE_REST_KEY
+    })
+
+    attrs = attrs_request.json()['results']
+
+    print attr.upper(), 'Agregando a todos los registros'
+
+    for a in attrs:
+        if a.get(attr) is None:
+            uu = 'https://api.parse.com/1/classes/Attribute/%s' % a.get('objectId')
+            requests.put(uu, data=json.dumps({
+                attr: False,
+            }), headers={
+                "X-Parse-Application-Id": keys.PARSE_APP_ID,
+                "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
+                'Content-type': 'application/json'
+            })
+
+    print "Atributo '", attr, "': Agregado"

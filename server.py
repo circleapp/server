@@ -10,7 +10,7 @@ from utils import valid_coords
 app = Flask(__name__)
 
 
-@app.route('/attributes', methods=['GET'])
+@app.route('/', methods=['GET'])
 def attrs():
     return render_template('set_attributes.html')
 

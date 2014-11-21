@@ -23,8 +23,7 @@ $(function(){
 	select.on('change', function(e){
 		var that = $(this);
 		var id = that.val();
-		var selectedIndex = that[0].selectedIndex;
-		var selectedItem = that.find('option').eq(selectedIndex);
+		var selectedItem = getSelectedElement(that);
 		var fourId = selectedItem.data('fourId');
 		
 		if(fourId){
@@ -51,13 +50,31 @@ $(function(){
 		}
 	});
 
+	actualizarBtn.on('click', function(e){
+		e.preventDefault();
+		var attrSerialized = serializeAttributes();
+		var place = getSelectedElement(select);
+
+		if(place.data('attributeId')){
+			var url = 'Attribute/' + place.data('attributeId');
+
+			$.parse.put(url, attrSerialized, function(d){
+				alert('Actualizado');
+			});
+		}else{
+			alert('Error!')
+		}
+
+	});
+
+
 	$.parse.init({
 		app_id : "pjDqEx0JZwcC6mWcycXAQ6lIWaldcGtynfLIkR0B",
     	rest_key : "m62wRFWC1JQ2fbFoNYmAPt6nmtOrRmXeUCJY49P1"
 	})
 
+	Parse.initialize("pjDqEx0JZwcC6mWcycXAQ6lIWaldcGtynfLIkR0B", "pdl4Xqgj3OYNoCBt7NOqe3jeLpjRs2R21jhgwvok");
 	getPlaces();
-
 
 	function getAttributes(id){
 		cleanAttributes();
@@ -72,28 +89,54 @@ $(function(){
 			return false;
 		}
 
+
+		var selectedItem = getSelectedElement(select);
 		$.parse.get('Attribute', {where: {
 			place: {
 				__type: 'Pointer',
 				className: 'Place',
 				objectId: id
-			}
+			},
 		}}, function(d){
+
+			var placeId = select.val();
+			if(d.results.length === 0){
+				$.parse.post('Attribute', {place: {
+					__type: 'Pointer',
+					className: 'Place',
+					objectId: placeId
+				}}, function(data){
+					getAttributes(placeId);
+				});
+
+				return;
+			}
+
+			selectedItem.data('attributeId', d.results[0].objectId)
+
 			var clone = attribute.clone();
-			if(d.results.length === 0){ return; }
 			var attr = d.results[0];
 			var column;
 			for(column in attr){
 				if(!isInIgnoredColumns(column)){
 					// console.log(column, attr[column]);
-					var clone = $('<tr />').addClass('attr');
+					var clone = $('<tr />');
 					clone.append($('<td />').append($('<span>'+ column.toUpperCase() +'</span>')))
-					clone.append($('<td />').append($('<input type="checkbox" name="'+ column +'" />').prop('checked', attr[column])))
-
+					clone.append($('<td />').append(
+						$('<input type="checkbox" name="'+ column +'" />')
+						.prop('checked', attr[column])
+						.addClass('attr')
+					));
 					attributes.append(clone);
 				}
 			}
 		});
+	}
+
+	function getSelectedElement(select){
+		var selectedIndex = select[0].selectedIndex;
+		var selectedItem = select.find('option').eq(selectedIndex);
+		return selectedItem;
 	}
 
 	function cleanAttributes(){
@@ -117,6 +160,18 @@ $(function(){
 			}
 		});
 	};
+
+	function serializeAttributes(){
+		var attrs = $('.attr');
+		var attrsJson = {};
+
+		attrs.each(function(ix, el){
+			var attr = $(el);
+			attrsJson[attr.attr('name')] = attr.prop('checked');
+		});
+
+		return attrsJson;
+	}
 
 	function getTips(id){
 		cleanTips();
