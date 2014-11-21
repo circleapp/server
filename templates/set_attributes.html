@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sett attributes 4 places</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='utils/bootstrap/css/bootstrap.css') }}">
+	<style>
+		h2{
+			text-align: center;
+		}
+	
+		#places{
+			margin-top: 3rem;
+		}
+
+		#attributes-wrapper{
+			margin-top: 5rem;
+		}
+
+		#tips{
+			display: block;
+			width: 100%;
+		}
+
+		#tips-wrapper{
+			margin-top: 5rem;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrapper" class="row">
+		<div id="container">
+			<h2>Where 2 Go</h2>
+			<div id="places" class="col-md-4 col-md-offset-2">
+				<form role="form">
+					<div class="form-group">
+						<label for="places_list">Lugar</label>
+						<select id="places_list" class="form-control" >
+							<option value="">Ejemplo</option>
+						</select>
+						<a href="#" id="delete-btn" class="pull-right">Eliminar</a>
+					</div>
+				</form>
+				<table id="tips-wrapper" class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Tips</th>
+						</tr>
+					</thead>
+					<tbody id="tips" >
+						
+					</tbody>
+				</table>
+			</div>
+			<section id="attributes-wrapper" class="col-md-4">
+				<table class="table table-striped table-bordered">
+					<thead>
+						<td>Atributo</td>
+						<td>Y/n</td>
+					</thead>
+					<tbody id="attributes" >
+						
+					</tbody>
+				</table>
+				<a href="#" id="actualizar-btn" class="btn btn-success pull-right">Actualizar</a>
+			</section>
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/parse.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.parse.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

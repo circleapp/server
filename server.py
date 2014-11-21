@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from flask import Flask
 from flask import request
+from flask import render_template
 import requests
 import json
 from keys import PARSE_APP_ID, PARSE_REST_KEY
@@ -8,7 +9,12 @@ from utils import valid_coords
 app = Flask(__name__)
 
 
-@app.route("/tree", methods=["GET"])
+@app.route('/attributes', methods=['GET'])
+def attrs():
+    return render_template('set_attributes.html')
+
+
+@app.route("/tree", methods=['GET'])
 def build_tree():
     radius = 10
     try:
@@ -53,7 +59,6 @@ def build_tree():
 
     #TODO: Procesar algoritmo de AI para recomendaciones
     return json.dumps(res)
-
 
 if __name__ == "__main__":
     app.run()
