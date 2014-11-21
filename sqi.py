@@ -99,7 +99,7 @@ def search_venues():
     return "Populated :D"
 
 
-def add_attribute(attr):
+def add_attribute(columns):
     u = 'https://api.parse.com/1/classes/Attribute'
     attrs_request = requests.get(u, data={
         'limit': 500,
@@ -108,19 +108,22 @@ def add_attribute(attr):
         "X-Parse-REST-API-Key": keys.PARSE_REST_KEY
     })
 
-    attrs = attrs_request.json()['results']
+    attribute_records = attrs_request.json()['results']
 
-    print attr.upper(), 'Agregando a todos los registros'
+    print 'Agregando a todos los registros'
 
-    for a in attrs:
-        if a.get(attr) is None:
-            uu = 'https://api.parse.com/1/classes/Attribute/%s' % a.get('objectId')
-            requests.put(uu, data=json.dumps({
-                attr: False,
-            }), headers={
-                "X-Parse-Application-Id": keys.PARSE_APP_ID,
-                "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
-                'Content-type': 'application/json'
-            })
+    for a in attribute_records:
+        columns_dict = {}
+        for column in columns:
+            if a.get(column) is None:
+                print "Agregar columna: ", column
+                columns_dict[column] = False
 
-    print "Atributo '", attr, "': Agregado"
+        uu = 'https://api.parse.com/1/classes/Attribute/%s' % a.get('objectId')
+        requests.put(uu, data=json.dumps(columns_dict), headers={
+            "X-Parse-Application-Id": keys.PARSE_APP_ID,
+            "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
+            'Content-type': 'application/json'
+        })
+
+    print "Atributos agregados"

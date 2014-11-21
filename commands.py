@@ -1,6 +1,6 @@
 from sqi import *
 
-ATTRIBUTES = (
+COLUMNS = (
     'beber',
     'familiar',
     'amigos',
@@ -18,5 +18,4 @@ ATTRIBUTES = (
     'comer'
 )
 
-for attr in ATTRIBUTES:
-    add_attribute(attr)
+add_attribute(COLUMNS)
