@@ -6,12 +6,14 @@ $(function(){
 		attributes,
 		attribute,
 		tip,
-		actualizarBtn;
+		actualizarBtn,
+		sqLink;
 
 	select = $('#places_list');
 	tips = $("#tips");
 	attributes = $("#attributes");
 
+	sqLink = $('#sqlink');
 	deleteBtn = $('#delete-btn');
 	actualizarBtn = $('#actualizar-btn');
 
@@ -27,6 +29,8 @@ $(function(){
 		var fourId = selectedItem.data('fourId');
 		
 		if(fourId){
+			var link = 'https://foursquare.com/v/' + fourId;
+			sqLink.attr('href', link).text(link)
 			getTips(fourId);
 			getAttributes(id);
 		}else{
