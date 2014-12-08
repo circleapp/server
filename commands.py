@@ -5,6 +5,11 @@ COLUMNS = (
     'familiar',
     'amigos',
     'platicar',
+    'pareja',
+    'leer',
+    'coworking',
+    'comprar',
+    'caminar',
     'bailar',
     'ligar',
     'cultural',
@@ -13,9 +18,13 @@ COLUMNS = (
     'aireLibre',
     'fumar',
     'grande',
+    'cantar',
     'chico',
     'musica',
+    'estacionamiento',
     'comer'
 )
 
-add_attribute(COLUMNS)
+# add_attribute(COLUMNS)
+# testings()
+get_pix()

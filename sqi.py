@@ -2,6 +2,7 @@ import requests
 import keys
 from foursquare import Foursquare
 import json
+import urllib
 
 
 def get_categories():
@@ -127,3 +128,103 @@ def add_attribute(columns):
         })
 
     print "Atributos agregados"
+
+
+def get_pix():
+
+    fsq = Foursquare(client_id=keys.FOURSQUARE_CLIENT_ID,
+                     client_secret=keys.FOURSQUARE_CLIENT_SECRET,
+                     version=keys.FOURSQUARE_VERSION)
+
+    u = 'https://api.parse.com/1/classes/Place'
+    places_req = requests.get(u, data={
+        'limit': 500
+    }, headers={
+        "X-Parse-Application-Id": keys.PARSE_APP_ID,
+        "X-Parse-REST-API-Key": keys.PARSE_REST_KEY
+    })
+
+    places = places_req.json().get('results', [])
+    for place in places:
+        print 'Obteniendo fotos para >> %s <<' % place.get('name')
+        sq_id = place.get('sq_id')
+        place_parse_id = place.get('objectId')
+        pix_objects = []
+        if sq_id:
+            pix = fsq.venues_pix(sq_id)
+            pix_len = len(pix)
+            # for pic in pix:
+            for i in xrange(0, 7):
+                if i >= pix_len:
+                    break
+
+                pic = pix[i]
+                if pic.get('visibility') == 'public':
+                    dimen = "%sx%s" % (pic.get('height'), pic.get('width'))
+                    url = "%s%s%s" % (pic.get('prefix'), dimen, pic.get('suffix'))
+                    pic_request = requests.get(url)
+
+                    upload_url = 'https://api.parse.com/1/files/' + pic.get('suffix')[1:]
+                    upload_request = requests.post(upload_url, data=pic_request.content, headers={
+                        "X-Parse-Application-Id": keys.PARSE_APP_ID,
+                        "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
+                        'Content-type': 'image/jpeg'
+                    })
+                    uploaded_filename = upload_request.json()['name']
+
+                    pic_parse_url = 'https://api.parse.com/1/classes/Pic'
+                    pic_parse_request = requests.post(pic_parse_url, data=json.dumps({
+                        'image': {
+                            '__type': 'File',
+                            'name': uploaded_filename
+                        }
+                    }), headers={
+                        "X-Parse-Application-Id": keys.PARSE_APP_ID,
+                        "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
+                    })
+
+                    pic_objectId = pic_parse_request.json().get('objectId')
+
+                    if pic_objectId:
+                        pix_objects.append({
+                            '__type': 'Pointer',
+                            'className': 'Pic',
+                            'objectId': pic_objectId
+                        })
+        else:
+            print "\tNo hay fotos"
+            continue
+
+        if pix_objects:
+            print '\tActualizando fotos'
+            place_parse_url = 'https://api.parse.com/1/classes/Place/' + place_parse_id
+            place_pix_request = requests.put(place_parse_url, data=json.dumps({
+                'pix': {'__op': 'AddRelation', 'objects': pix_objects}
+            }), headers={
+                "X-Parse-Application-Id": keys.PARSE_APP_ID,
+                "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
+            })
+            if place_pix_request.json().get('updatedAt'):
+                print '\t\tActualizado.', "((%s))" % place_parse_id
+            # print pix_objects, place_parse_id, place_parse_urlx
+
+
+def testings():
+    u = 'https://api.parse.com/1/classes/Place'
+    cat = requests.get(u, data={
+        'where': json.dumps({
+            '$relatedTo': {
+                'object': {
+                    '__type': 'Pointer',
+                    'className': '_User',
+                    'objectId': 'E4oafmmqyP'
+                },
+                'key': 'favs'
+            }
+        })
+    }, headers={
+        "X-Parse-Application-Id": keys.PARSE_APP_ID,
+        "X-Parse-REST-API-Key": keys.PARSE_REST_KEY
+    })
+
+    print cat.json()

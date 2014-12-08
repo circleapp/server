@@ -23,6 +23,10 @@ class Foursquare(object):
         engine = Foursquare.Venue(sq=self)
         return engine.search_venues(location, radius)
 
+    def venues_pix(self, venue_id):
+        engine = Foursquare.Venue(sq=self)
+        return engine.get_photos(venue_id)
+
     class Category(object):
         def get_category_info(self, category):
             name = category.get('shortName')
@@ -88,6 +92,15 @@ class Foursquare(object):
                 'id': tip.get('id'),
                 'text': tip.get('text')
             }
+
+        def get_photos(self, venue_id):
+            venue_pix_url = "%s/venues/%s/photos/%s/" % (self.sq.API_URL,
+                                                         venue_id,
+                                                         self.sq.ACCES_PARAMS)
+
+            pix_request = requests.get(venue_pix_url)
+            pix = pix_request.json()['response']['photos']['items']
+            return pix
 
         def get_tips(self, venue_id):
             venue_tips_url = "%s/venues/%s/tips/%s/" % (self.sq.API_URL,
