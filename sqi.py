@@ -170,7 +170,13 @@ def get_pix():
                         "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
                         'Content-type': 'image/jpeg'
                     })
-                    uploaded_filename = upload_request.json()['name']
+
+
+                    uploaded_filename = upload_request.json().get('name')
+
+                    if not uploaded_filename:
+                        print upload_request.json()
+                        continue
 
                     pic_parse_url = 'https://api.parse.com/1/classes/Pic'
                     pic_parse_request = requests.post(pic_parse_url, data=json.dumps({
@@ -205,7 +211,7 @@ def get_pix():
                 "X-Parse-REST-API-Key": keys.PARSE_REST_KEY,
             })
             if place_pix_request.json().get('updatedAt'):
-                print '\t\tActualizado.', "((%s))" % place_parse_id
+                print '\t\tActualizado.', "((%s))" % place_parse_id, '\n\n\n'
             # print pix_objects, place_parse_id, place_parse_urlx
 
 
